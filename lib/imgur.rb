@@ -200,16 +200,15 @@ module Imgur
           image_ids << img
         end
       end
-      body = {
-          ids: @images,
-          title: @title,
-          description: @description,
-          privacy: @privacy,
-          layout: @layout,
-          cover: @cover
-      }
+      body = {}
+      body[:ids] = image_ids if image_ids.length > 0
+      body[:title] = @title if @title
+      body[:description] = @description if @description
+      body[:privacy] = @privacy if @privacy
+      body[:layout] = @layout if @layout
+      body[:cover] = @cover if @cover
       puts body
-      client.post(url, body: body)
+      client.post(url, body)
     end
 
   end
