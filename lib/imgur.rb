@@ -11,9 +11,10 @@ module Imgur
   ALBUM_GET_PATH = 'album/'
   ALBUM_CREATE_PATH = 'album'
   ACCOUNT_PATH = 'account/'
+  CREDITS_PATH = 'credits'
 
   class Client
-    attr_accessor :client_id
+    attr_accessor :client_id, :remaining_in_hour, :remaining_in_day
 
     def initialize(client_id)
       @client_id = client_id
@@ -21,14 +22,29 @@ module Imgur
 
     def post(url, body={})
       resp = HTTParty.post(url, body: body, headers: auth_header)
+      parse_headers(resp.headers)
       raise NotFoundException.new if resp.response.is_a? Net::HTTPNotFound
       resp
     end
 
     def get(url, query={})
       resp = HTTParty.get(url, query: query, headers: auth_header)
+      parse_headers(resp.headers)
       raise NotFoundException.new if resp.response.is_a? Net::HTTPNotFound
       resp
+    end
+
+    def parse_headers(headers)
+      @remaining_in_hour = headers["x-ratelimit-userremaining"]
+      @remaining_in_day  = headers["x-ratelimit-clientremaining"]
+    end
+
+    def credits()
+      url = API_PATH + CREDITS_PATH
+      resp = get(url).parsed_response
+      @remaining_in_hour = resp["data"]["UserRemaining"]
+      @remaining_in_day  = resp["data"]["ClientRemaining"]
+      return resp["data"]
     end
 
     def get_image(id)
