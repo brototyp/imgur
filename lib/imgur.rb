@@ -250,7 +250,7 @@ module Imgur
   class Image
     attr_accessor :id, :title, :description, :date, :type, :animated, :width,
                   :height, :size, :views, :bandwidth, :favorite, :nsfw, :section,
-                  :deletehash, :link, :html_link
+                  :deletehash, :name, :section, :gifv, :mp4, :webm, :link, :html_link
 
     def initialize(data)
       @id = data['id']
@@ -268,7 +268,13 @@ module Imgur
       @nsfw = data['nsfw']
       @section = data['section']
       @deletehash = data['deletehash']
+      @name = data['name']
+      @section = data['section']
       @link = data['link']
+      @gifv = data['gifv']
+      @mp4 = data['mp4']
+      @webm = data['webm']
+      @looping = data['looping']
       @html_link = HTML_PATH + @id
     end
 
